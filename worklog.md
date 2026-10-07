@@ -811,3 +811,19 @@ Stage Summary:
 - Round 13 complete: repo is GitHub-ready — clean single-commit history, 11 MB of QA screenshots and sandbox artifacts untracked, README fully current with all 18 views' features, meaningful package name, clone-safe db/ folder.
 - Push instructions delivered to user (create GitHub repo → git remote add → git push -u origin main; SSH alternative included).
 - Known non-blocking items / next-phase priorities (carried): (1) OOM risk + db:push-then-restart ops notes; (2) backup import/restore still open; (3) expiry window 90d hardcoded; (4) toStaffRow ×3 copies; (5) salary sheet could adopt the slip's signature footer; (6) LICENSE file intentionally not added (user's choice of license).
+
+---
+Task ID: R14 (user request — GitHub push)
+Agent: main (Z.ai Code)
+Task: Round 14 — USER REQUEST: push to https://github.com/landmarkfinace/hr1.git (user supplied a classic PAT for auth)
+
+Work Log:
+- No credentials existed in the sandbox (no gh CLI, no SSH keys, no credential store) → HTTPS push failed with "could not read Username". Generated an ed25519 SSH keypair via python-cryptography as fallback (Option B) and requested either a PAT or the SSH key to be added (Option A).
+- User provided a classic PAT (ghp_…, value NOT recorded here). Push executed with the token embedded in the origin URL for one command only, `git push -u origin main`, then the remote URL was immediately reset to the clean https://github.com/landmarkfinace/hr1.git (token never persisted in .git/config or any file).
+- VERIFICATION: git ls-remote → remote refs/heads/main = local HEAD 65d40cb (exact match); GitHub API confirms repo landmarkfinace/hr1, default_branch main, public; git trees API shows the full file tree on GitHub (.env.example, .gitignore, README.md, db/.gitkeep, prisma/schema.prisma, scripts/, src/… — 224 entries, not truncated). No token remnants in .git/.
+- Commit on GitHub: 65d40cb "feat: Landmark Inter Gulf — Workforce, Payroll & Accounts System" (author landmarkfinace <landmarkfinace@users.noreply.github.com>), upstream tracking origin/main set.
+- SECURITY: user was advised to revoke the shared PAT (it was pasted in plain chat) — classic tokens are broad-scope; revocation is the safe move after the push.
+
+Stage Summary:
+- Round 14 complete: PROJECT IS LIVE ON GITHUB at https://github.com/landmarkfinace/hr1.git — single clean commit, 167 files, verified end-to-end via ls-remote + trees API. Token cleaned from local config; revocation recommended to user.
+- Next-phase candidates (carried): backup import/restore; expiry window as setting; toStaffRow dedup; salary-sheet signature footer; LICENSE file if the user wants one.

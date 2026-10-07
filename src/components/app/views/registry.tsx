@@ -1,0 +1,65 @@
+'use client'
+
+import { useAppStore } from '@/lib/store'
+import { DashboardView } from './dashboard'
+import { ProjectsView } from './projects'
+import { ClientsView } from './clients'
+import { WorkerDeploymentView } from './deployments'
+import { StaffListView } from './staff-list'
+import { StaffCategoriesView } from './staff-categories'
+import { AttendanceView } from './attendance'
+import { PayrollView } from './payroll'
+import { SalarySheetView } from './salary-sheet'
+import { SalarySummaryView } from './salary-summary'
+import { IncomeListView } from './income-list'
+import { ExpenseListView } from './expense-list'
+import { AccountsSummaryView } from './accounts-summary'
+import { TransactionCategoriesView } from './transaction-categories'
+import { RolesView } from './roles'
+import { UsersView } from './users'
+import { SettingsView } from './settings'
+import { ActivityLogView } from './activity-log'
+
+export function ViewRouter() {
+  const { view } = useAppStore()
+  switch (view) {
+    case 'dashboard':
+      return <DashboardView />
+    case 'projects':
+      return <ProjectsView />
+    case 'clients':
+      return <ClientsView />
+    case 'deployments':
+      return <WorkerDeploymentView />
+    case 'staff-list':
+      return <StaffListView />
+    case 'staff-categories':
+      return <StaffCategoriesView />
+    case 'attendance':
+      return <AttendanceView />
+    case 'payroll':
+      return <PayrollView />
+    case 'salary-sheet':
+      return <SalarySheetView />
+    case 'salary-summary':
+      return <SalarySummaryView />
+    case 'income-list':
+      return <IncomeListView />
+    case 'expense-list':
+      return <ExpenseListView />
+    case 'accounts-summary':
+      return <AccountsSummaryView />
+    case 'transaction-categories':
+      return <TransactionCategoriesView />
+    case 'roles':
+      return <RolesView />
+    case 'users':
+      return <UsersView />
+    case 'settings':
+      return <SettingsView />
+    case 'activity-log':
+      return <ActivityLogView />
+    default:
+      return <DashboardView />
+  }
+}

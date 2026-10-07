@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
             staffCategory: { select: { id: true, name: true } },
           },
         },
-        project: { select: { id: true, name: true } },
+        project: { select: { id: true, name: true, client: { select: { name: true } } } },
       },
       orderBy: { staff: { fullName: 'asc' } },
     })
@@ -68,7 +68,11 @@ export async function GET(req: NextRequest) {
       const penaltyPt = round2(p.absentPenalty + p.ptAmount)
       const unionOther = round2(p.unionFees + otherDeductionAmount)
       const computed: SheetRowComputed = { basicPay, otPay, penaltyPt, unionOther }
-      return { ...p, ...computed }
+      // Flatten the nested client relation for the print view
+      const project = p.project
+        ? { ...p.project, clientName: p.project.client?.name ?? null }
+        : null
+      return { ...p, project, ...computed }
     })
 
     const totals = {

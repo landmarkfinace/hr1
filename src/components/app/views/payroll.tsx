@@ -311,6 +311,7 @@ export function PayrollView() {
           'IQAMA',
           'Category',
           'Project',
+          'Client Company',
           'Period',
           'Total Hours',
           'Hourly Rate',
@@ -335,6 +336,7 @@ export function PayrollView() {
           r.staff.iqamaId,
           r.staff.staffCategory?.name ?? '',
           r.project?.name ?? '',
+          r.project?.clientName ?? '',
           `${monthName(r.month)} ${r.year}`,
           r.totalHours.toFixed(2),
           r.hourlyRateSnapshot.toFixed(2),
@@ -586,7 +588,12 @@ export function PayrollView() {
                     ) : null}
                     <span className="flex min-w-0 items-center gap-1">
                       <FolderKanban className="h-3 w-3 shrink-0" />
-                      <span className="truncate">{row.project?.name ?? 'No project'}</span>
+                      <span className="truncate">
+                        {row.project?.name ?? 'No project'}
+                        {row.project?.clientName ? (
+                          <span className="text-muted-foreground/80"> · {row.project.clientName}</span>
+                        ) : null}
+                      </span>
                     </span>
                     <span className="flex shrink-0 items-center gap-1">
                       <CalendarDays className="h-3 w-3" />
@@ -712,7 +719,12 @@ export function PayrollView() {
                       </div>
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-sm">
-                      {row.project?.name ?? '—'}
+                      <span>{row.project?.name ?? '—'}</span>
+                      {row.project?.clientName ? (
+                        <span className="block text-[11px] text-muted-foreground">
+                          {row.project.clientName}
+                        </span>
+                      ) : null}
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-sm">
                       {monthName(row.month)} {row.year}

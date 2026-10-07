@@ -827,3 +827,21 @@ Work Log:
 Stage Summary:
 - Round 14 complete: PROJECT IS LIVE ON GITHUB at https://github.com/landmarkfinace/hr1.git — single clean commit, 167 files, verified end-to-end via ls-remote + trees API. Token cleaned from local config; revocation recommended to user.
 - Next-phase candidates (carried): backup import/restore; expiry window as setting; toStaffRow dedup; salary-sheet signature footer; LICENSE file if the user wants one.
+
+---
+Task ID: R15 (user-requested feature)
+Agent: main (Z.ai Code)
+Task: Round 15 — USER REQUEST (Bengali): "Payroll and Salary Sheet e Workers ze company te kaj korbe sei client er name thakbe PDF e" → show the client company each worker works for on the Payroll & Salary Sheet PDFs
+
+Work Log:
+- DATA FLOW: PayrollRow.project now carries clientName (types.ts). Three APIs include project.client (name) and flatten to clientName via serializePayroll: /api/payrolls (GET list + POST create), /api/payrolls/[id] (GET + PUT), /api/payrolls/sheet (rows.map flatten). Verified live: JAFURAH PROJECT → SK GREEN BUILDERS, SABIC Gas Plant → Al Waha Engineering Group (user's real data).
+- SALARY SLIP PDF (salary-slip.tsx): info block gains 9th item "Client Company" (fills the 3×3 grid exactly — no height change); acknowledgment paragraph now names deployment: "…for my work on {project} at {client company}". DOM-verified: 973px ≤ 1047px A4 usable, TOTAL GROSS/DEDUCTIONS/NET BAR/3 signature blocks all present, no horizontal clip, 0 errors, mobile 390px no overflow.
+- SALARY SHEET PDF (salary-sheet-print.tsx): column renamed "Project / Client Company" with client name as a 9px sub-line under each project (same pattern as IQAMA under staff name — handles long client names without a 16th column); meta line under the title shows "· Client: X" when filtered by project (resolved from ProjectRow.clientName).
+- ON-SCREEN CONSISTENCY (payroll.tsx): desktop table Project cell gets an 11px client sub-line; mobile card meta shows "Project · Client"; CSV export gains a "Client Company" column.
+- QA (session r15-qa): payrolls API + sheet API clientName verified via curl; payroll table 10 rows + client sub-lines; slip E2E (Client Company: Al Waha Engineering Group, ack has "at Al Waha Engineering Group", fitsA4, 0 errs); sheet print E2E unfiltered (header "Project / Client Company", 15 client sub-lines) + project-filtered (meta "Project: JAFURAH PROJECT · Client: SK GREEN BUILDERS", 2 client cells). VLM: sheet "clean, well-aligned, properly formatted"; slip info-block client field confirmed (VLM bottom-truncation note = screenshot-only artifact, DOM measurements authoritative). Mobile 390px slip: client visible, 0 overflow.
+- QA-methodology note: salary-sheet Print button is disabled when the filtered month/year has 0 rows (September default ≠ October data) — set month before printing in QA.
+- FINAL: lint 0 errors; tsc 0 app errors; dev.log clean. Committed + pushed to GitHub (landmarkfinace/hr1).
+
+Stage Summary:
+- Round 15 complete: client company name now appears everywhere payroll is shown or printed — salary slip PDF (info block + acknowledgment), salary sheet PDF (per-row sub-line + filter meta line), on-screen payroll table/mobile/CSV. 7 files touched, all verified E2E with live user data.
+- Known non-blocking items (carried): backup import/restore; expiry window as setting; toStaffRow ×3; LICENSE file.

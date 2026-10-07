@@ -55,6 +55,7 @@ export function SalarySheetPrintDialog({
 }) {
   const settings = useAppStore((s) => s.settings)
   const [projectName, setProjectName] = useState<string | null>(null)
+  const [clientName, setClientName] = useState<string | null>(null)
   const [categoryName, setCategoryName] = useState<string | null>(null)
 
   // Force A4 landscape for this printout (dynamic @page rule)
@@ -75,9 +76,9 @@ export function SalarySheetPrintDialog({
             : Promise.resolve(null),
         ])
         if (cancelled) return
-        setProjectName(
-          projectsRes?.data.find((p) => p.id === filters.projectId)?.name ?? null
-        )
+        const project = projectsRes?.data.find((p) => p.id === filters.projectId)
+        setProjectName(project?.name ?? null)
+        setClientName(project?.clientName ?? null)
         setCategoryName(
           categoriesRes?.data.find((c) => c.id === filters.categoryId)?.name ?? null
         )
@@ -156,6 +157,8 @@ export function SalarySheetPrintDialog({
 
   const projectLabel = filters.projectId ? (projectName ?? '—') : 'All Projects'
   const categoryLabel = filters.categoryId ? (categoryName ?? '—') : 'All Categories'
+  // Client company of the selected project filter (null when not filtered)
+  const clientLabel = filters.projectId ? (clientName ?? null) : null
 
   const th =
     'border border-neutral-300 bg-neutral-100 px-1.5 py-1.5 text-left font-semibold text-neutral-800'
@@ -238,7 +241,9 @@ export function SalarySheetPrintDialog({
               <div>
                 <h2 className="text-lg font-bold">Salary Sheet — {periodLabel}</h2>
                 <p className="mt-1 text-[11px] text-neutral-600">
-                  Project: {projectLabel} · Category: {categoryLabel} · Total Manpower:{' '}
+                  Project: {projectLabel}
+                  {clientLabel ? <> · Client: <span className="font-medium">{clientLabel}</span></> : null}
+                  {' '}· Category: {categoryLabel} · Total Manpower:{' '}
                   {data.totals.count}
                 </p>
               </div>
@@ -254,7 +259,7 @@ export function SalarySheetPrintDialog({
                   <th className={`${th} text-center`}>SN</th>
                   <th className={th}>Staff Name</th>
                   <th className={th}>Category</th>
-                  <th className={th}>Project</th>
+                  <th className={th}>Project / Client Company</th>
                   <th className={thR}>Hours</th>
                   <th className={thR}>Rate</th>
                   <th className={thR}>Basic</th>
@@ -279,7 +284,12 @@ export function SalarySheetPrintDialog({
                       </span>
                     </td>
                     <td className={td}>{r.staff.staffCategory?.name ?? 'Uncategorized'}</td>
-                    <td className={td}>{r.project?.name ?? '—'}</td>
+                    <td className={td}>
+                      <span className="font-medium">{r.project?.name ?? '—'}</span>
+                      <span className="block text-[9px] text-neutral-500">
+                        {r.project?.clientName ?? 'No client company'}
+                      </span>
+                    </td>
                     <td className={tdR}>
                       {fmtHours(r.totalHours)}
                       {r.overtimeHours > 0 ? (

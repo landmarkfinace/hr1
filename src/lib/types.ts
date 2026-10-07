@@ -242,7 +242,7 @@ export type PayrollRow = {
   payType: PayType
   taxCode: string | null
   staff: { id: string; fullName: string; iqamaId: string; staffCategory: { id: string; name: string } | null }
-  project: { id: string; name: string } | null
+  project: { id: string; name: string; clientName: string | null } | null
 }
 
 export type PayrollInput = {

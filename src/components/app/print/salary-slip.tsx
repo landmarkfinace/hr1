@@ -211,6 +211,7 @@ function SalarySlipDocument({ payroll, settings }: { payroll: SlipPayroll; setti
         <InfoItem label="Payment Method" value={PAY_TYPE_LABELS[p.payType] ?? p.payType} />
         <InfoItem label="Hourly Rate" value={`${formatMoney(p.hourlyRateSnapshot, currency)}/hr`} />
         <InfoItem label="Assigned Project" value={p.project?.name ?? '—'} />
+        <InfoItem label="Client Company" value={p.project?.clientName ?? '—'} />
       </section>
 
       {/* EARNINGS + DEDUCTIONS — side by side so the slip fits one A4 page */}
@@ -359,7 +360,8 @@ function SalarySlipDocument({ payroll, settings }: { payroll: SlipPayroll; setti
         <p className="mt-1.5 text-xs leading-relaxed text-neutral-700">
           I hereby acknowledge that I have received my full and final net salary of{' '}
           <span className="font-semibold tabular-nums">{formatMoney(p.netPay, currency)}</span> for{' '}
-          {monthName(p.month)} {p.year} by {PAY_TYPE_LABELS[p.payType] ?? p.payType}. I confirm the
+          {monthName(p.month)} {p.year} by {PAY_TYPE_LABELS[p.payType] ?? p.payType}
+          {p.project ? <> for my work on {p.project.name}{p.project.clientName ? <> at {p.project.clientName}</> : null}</> : null}. I confirm the
           earnings and deductions stated on this slip are correct and I have no further claims
           against {companyName} for this period.
         </p>

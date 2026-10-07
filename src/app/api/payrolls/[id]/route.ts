@@ -28,8 +28,16 @@ const PAYROLL_INCLUDE = {
       staffCategory: { select: { id: true, name: true } },
     },
   },
-  project: { select: { id: true, name: true } },
+  project: { select: { id: true, name: true, client: { select: { name: true } } } },
 } satisfies Prisma.PayrollInclude
+
+/** Flatten the nested client relation to `project.clientName` for the client side. */
+function serializePayroll<T extends { project: { id: string; name: string; client: { name: string } | null } | null }>(row: T) {
+  return {
+    ...row,
+    project: row.project ? { ...row.project, clientName: row.project.client?.name ?? null } : null,
+  }
+}
 
 const DUPLICATE_MESSAGE =
   'A payroll record already exists for this staff member, project and month.'
@@ -76,7 +84,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
         ? round2((payroll.grossPay * payroll.otherDeductionValue) / 100)
         : round2(payroll.otherDeductionValue)
 
-    return ok({ ...payroll, otherDeductionAmount })
+    return ok({ ...serializePayroll(payroll), otherDeductionAmount })
   } catch {
     return serverError()
   }
@@ -230,7 +238,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
     })
 
     return ok({
-      ...updated,
+      ...serializePayroll(updated),
       ...(calc.negativeWarning
         ? { warning: 'Net pay computed as negative and was clamped to 0' }
         : {}),
